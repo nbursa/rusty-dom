@@ -1,5 +1,5 @@
 use wasm_bindgen::prelude::*;
-use rusty_dom::{initialize, element::Element, state::State};
+use rusty_dom::{initialize, element::RustyElement, state::State};
 use web_sys::window;
 
 #[wasm_bindgen(start)]
@@ -11,8 +11,8 @@ pub fn start() -> Result<(), JsValue> {
 pub fn main() -> Result<(), JsValue> {
     let state = State::new("Hello, World!".to_string());
 
-    let mut app = Element::new("div");
-    let mut header = Element::new("h1");
+    let mut app = RustyElement::new("div");
+    let mut header = RustyElement::new("h1");
     header.set_text(&state.get());
 
     app.append_child(header.clone());

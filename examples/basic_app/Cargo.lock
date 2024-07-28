@@ -105,6 +105,7 @@ dependencies = [
  "serde",
  "serde_json",
  "wasm-bindgen",
+ "web-sys",
  "wee_alloc",
 ]
 
