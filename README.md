@@ -24,7 +24,7 @@ Ensure you have the following installed:
 Clone the repository and navigate to the project directory:
 
 ```sh
-git clone https://github.com/your-username/rusty_dom.git
+git clone https://github.com/nbursa/rusty_dom.git
 cd rusty_dom
 ```
 
