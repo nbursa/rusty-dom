@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use web_sys::{Document, Element as WebSysElement, Window};
 
 #[wasm_bindgen]
+#[derive(Clone)]
 pub struct RustyElement {
     tag: String,
     attributes: HashMap<String, String>,
@@ -26,10 +27,12 @@ impl RustyElement {
 
     pub fn set_attribute(&mut self, key: &str, value: &str) {
         self.attributes.insert(key.to_string(), value.to_string());
+        web_sys::console::log_1(&format!("Setting attribute: {}=\"{}\" for RustyElement at: {:?}", key, value, self as *const _).into());
     }
 
     pub fn append_child(&mut self, child: RustyElement) {
         self.children.push(child);
+        web_sys::console::log_1(&format!("Appending child for RustyElement at: {:?}", self as *const _).into());
     }
 
     pub fn set_text(&mut self, text: &str) {

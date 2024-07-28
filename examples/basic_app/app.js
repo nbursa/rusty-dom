@@ -16,7 +16,10 @@ async function run() {
     console.log("Parsed initial state:", parsedState);
 
     let app = new RustyElement("div");
+    app.set_attribute("id", "app");
+
     let header = new RustyElement("h1");
+    header.set_attribute("class", "header");
     console.log("Header element created with pointer:", header.__wbg_ptr);
 
     if (parsedState && parsedState.message) {
@@ -43,19 +46,20 @@ async function run() {
     if (parsedUpdatedState && parsedUpdatedState.message) {
         console.log("Setting text to:", parsedUpdatedState.message);
         try {
-            header = new RustyElement("h1"); // Re-create the header element
-            header.set_text(parsedUpdatedState.message);
-            console.log("Header element after set_text:", header);
-            app = new RustyElement("div"); // Re-create the app element
-            app.append_child(header);
+            let newHeader = new RustyElement("h1");
+            newHeader.set_attribute("class", "header");
+            newHeader.set_text(parsedUpdatedState.message);
+            console.log("Header element after set_text:", newHeader);
+            app = new RustyElement("div");
+            app.set_attribute("id", "app");
+            app.append_child(newHeader);
+            render_to_document(app);
         } catch (e) {
             console.error("Error setting text:", e);
         }
     } else {
         console.error("Parsed updated state or message is invalid:", parsedUpdatedState);
     }
-
-    render_to_document(app);
 }
 
 run().catch(console.error);
