@@ -12,7 +12,7 @@ pub mod state;
 pub mod router;
 
 pub use state::State;
-pub use element::{RustyElement, render_to_document};
+pub use element::{RustyElement};
 pub use router::Router;
 
 // Use `wee_alloc` as the global allocator.
@@ -26,5 +26,18 @@ pub fn initialize() -> Result<(), JsValue> {
     console_log::init_with_level(log::Level::Debug).expect("error initializing log");
 
     Ok(())
+}
+
+#[wasm_bindgen]
+pub fn create_header(state: &State) -> Result<RustyElement, JsValue> {
+    let header = RustyElement::new("h1")?;
+    header.set_attribute("class", "header")?;
+    header.set_text(&state.get())?;
+    Ok(header)
+}
+
+#[wasm_bindgen]
+pub fn get_element_by_id(id: &str) -> Result<RustyElement, JsValue> {
+    RustyElement::from_id(id)
 }
 

@@ -1,71 +1,71 @@
 use wasm_bindgen::prelude::*;
-use std::collections::HashMap;
-use web_sys::{Document, Element as WebSysElement, Window};
+use std::cell::RefCell;
+use std::rc::Rc;
+use web_sys::{window, Element as WebSysElement};
 
 #[wasm_bindgen]
-#[derive(Clone)]
 pub struct RustyElement {
-    tag: String,
-    attributes: HashMap<String, String>,
-    children: Vec<RustyElement>,
-    text: Option<String>,
+    inner: Rc<RefCell<WebSysElement>>,
 }
 
 #[wasm_bindgen]
 impl RustyElement {
     #[wasm_bindgen(constructor)]
-    pub fn new(tag: &str) -> RustyElement {
-        let element = RustyElement {
-            tag: tag.to_string(),
-            attributes: HashMap::new(),
-            children: vec![],
-            text: None,
-        };
-        web_sys::console::log_1(&format!("Created RustyElement at: {:?}", &element as *const _).into());
-        element
+    pub fn new(tag: &str) -> Result<RustyElement, JsValue> {
+        let document = window()
+            .ok_or("window not available")?
+            .document()
+            .ok_or("document not available")?;
+        let element = document.create_element(tag)?;
+        Ok(RustyElement {
+            inner: Rc::new(RefCell::new(element)),
+        })
     }
 
-    pub fn set_attribute(&mut self, key: &str, value: &str) {
-        self.attributes.insert(key.to_string(), value.to_string());
-        web_sys::console::log_1(&format!("Setting attribute: {}=\"{}\" for RustyElement at: {:?}", key, value, self as *const _).into());
+    #[wasm_bindgen]
+    pub fn from_id(id: &str) -> Result<RustyElement, JsValue> {
+        let document = window()
+            .ok_or("window not available")?
+            .document()
+            .ok_or("document not available")?;
+        let element = document.get_element_by_id(id).ok_or("element not found")?;
+        Ok(RustyElement {
+            inner: Rc::new(RefCell::new(element)),
+        })
     }
 
-    pub fn append_child(&mut self, child: RustyElement) {
-        self.children.push(child);
-        web_sys::console::log_1(&format!("Appending child for RustyElement at: {:?}", self as *const _).into());
+    #[wasm_bindgen]
+    pub fn set_text(&self, text: &str) -> Result<(), JsValue> {
+        let element = self.inner.borrow();
+        element.set_inner_html(text);
+        Ok(())
     }
 
-    pub fn set_text(&mut self, text: &str) {
-        web_sys::console::log_1(&format!("Setting text to: {} for RustyElement at: {:?}", text, self as *const _).into());
-        self.text = Some(text.to_string());
+    #[wasm_bindgen]
+    pub fn set_attribute(&self, name: &str, value: &str) -> Result<(), JsValue> {
+        let element = self.inner.borrow();
+        element.set_attribute(name, value)?;
+        Ok(())
     }
 
-    pub fn render(&self) -> String {
-        let mut html = format!("<{}", self.tag);
-        for (key, value) in &self.attributes {
-            html.push_str(&format!(" {}=\"{}\"", key, value));
-        }
-        html.push_str(">");
-        if let Some(ref text) = self.text {
-            html.push_str(text);
-        }
-        for child in &self.children {
-            html.push_str(&child.render());
-        }
-        html.push_str(&format!("</{}>", self.tag));
-        html
+    #[wasm_bindgen]
+    pub fn append_child(&self, child: &RustyElement) -> Result<(), JsValue> {
+        let parent = self.inner.borrow();
+        let child = child.inner.borrow();
+        parent.append_child(&*child)?;
+        Ok(())
     }
-}
 
-#[wasm_bindgen]
-pub fn render_to_document(element: &RustyElement) -> Result<(), JsValue> {
-    let window: Window = web_sys::window().unwrap();
-    let document: Document = window.document().unwrap();
-    let body: WebSysElement = document.body().unwrap().into();
-
-    let rendered_html = element.render();
-    body.set_inner_html(&rendered_html);
-
-    Ok(())
+    #[wasm_bindgen]
+    pub fn render_to_document(&self) -> Result<(), JsValue> {
+        let document = window()
+            .ok_or("window not available")?
+            .document()
+            .ok_or("document not available")?;
+        let body = document.body().ok_or("body not available")?;
+        let app = self.inner.borrow();
+        body.append_child(&*app)?;
+        Ok(())
+    }
 }
 
