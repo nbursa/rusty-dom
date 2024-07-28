@@ -24,8 +24,8 @@ Ensure you have the following installed:
 Clone the repository and navigate to the project directory:
 
 ```sh
-git clone https://github.com/nbursa/rusty_dom.git
-cd rusty_dom
+git clone https://github.com/nbursa/rusty-dom.git
+cd rusty-dom
 ```
 
 ### Building the Project
