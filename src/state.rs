@@ -1,23 +1,27 @@
+use wasm_bindgen::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[derive(Clone)]
-pub struct State<T> {
-    value: Rc<RefCell<T>>,
+#[wasm_bindgen]
+#[derive(Clone, Debug)]
+pub struct State {
+    value: Rc<RefCell<String>>,
 }
 
-impl<T> State<T> {
-    pub fn new(initial: T) -> State<T> {
+#[wasm_bindgen]
+impl State {
+    #[wasm_bindgen(constructor)]
+    pub fn new(initial: &str) -> State {
         State {
-            value: Rc::new(RefCell::new(initial)),
+            value: Rc::new(RefCell::new(initial.to_string())),
         }
     }
 
-    pub fn set(&self, value: T) {
-        *self.value.borrow_mut() = value;
+    pub fn set(&self, value: &str) {
+        *self.value.borrow_mut() = value.to_string();
     }
 
-    pub fn get(&self) -> T where T: Clone {
+    pub fn get(&self) -> String {
         self.value.borrow().clone()
     }
 }

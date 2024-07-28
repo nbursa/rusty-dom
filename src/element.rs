@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use web_sys::{Document, Element as WebSysElement, Window};
 
 #[wasm_bindgen]
-#[derive(Clone)]  // Add Clone trait
 pub struct RustyElement {
     tag: String,
     attributes: HashMap<String, String>,
@@ -15,12 +14,14 @@ pub struct RustyElement {
 impl RustyElement {
     #[wasm_bindgen(constructor)]
     pub fn new(tag: &str) -> RustyElement {
-        RustyElement {
+        let element = RustyElement {
             tag: tag.to_string(),
             attributes: HashMap::new(),
             children: vec![],
             text: None,
-        }
+        };
+        web_sys::console::log_1(&format!("Created RustyElement at: {:?}", &element as *const _).into());
+        element
     }
 
     pub fn set_attribute(&mut self, key: &str, value: &str) {
@@ -32,6 +33,7 @@ impl RustyElement {
     }
 
     pub fn set_text(&mut self, text: &str) {
+        web_sys::console::log_1(&format!("Setting text to: {} for RustyElement at: {:?}", text, self as *const _).into());
         self.text = Some(text.to_string());
     }
 
@@ -41,7 +43,7 @@ impl RustyElement {
             html.push_str(&format!(" {}=\"{}\"", key, value));
         }
         html.push_str(">");
-        if let Some(text) = &self.text {
+        if let Some(ref text) = self.text {
             html.push_str(text);
         }
         for child in &self.children {
@@ -56,7 +58,7 @@ impl RustyElement {
 pub fn render_to_document(element: &RustyElement) -> Result<(), JsValue> {
     let window: Window = web_sys::window().unwrap();
     let document: Document = window.document().unwrap();
-    let body: WebSysElement = document.document_element().unwrap().dyn_into::<WebSysElement>().unwrap();
+    let body: WebSysElement = document.body().unwrap().into();
 
     let rendered_html = element.render();
     body.set_inner_html(&rendered_html);
