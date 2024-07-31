@@ -1,9 +1,9 @@
-import init, { initialize, get_element_by_id, RustyElement } from './pkg/rusty_dom.js';
+import init, { initialize, get_element_by_id, RustyElement, State} from './pkg/rusty_dom.js';
 
 async function run() {
     console.log("Initializing WASM...");
     await init();
-    await initialize();
+    initialize();
     console.log("WASM Initialized");
 
     const initialState = {
@@ -14,7 +14,7 @@ async function run() {
     const state = new State(initialState.message);
     console.log("Initial state:", state.get());
 
-    const app = await get_element_by_id("app");
+    const app = get_element_by_id("app");
 
     const header = new RustyElement("h1");
     header.set_attribute("class", "header");
@@ -31,8 +31,7 @@ async function run() {
         header.set_text(state.get());
     };
 
-    const onClickClosure = Closure::wrap(Box::new(onClick) as Box<dyn FnMut()>);
-    button.add_event_listener("click", onClickClosure);
+    button.add_event_listener("click", onClick);
     app.append_child(button);
 }
 
