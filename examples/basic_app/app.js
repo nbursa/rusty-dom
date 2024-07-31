@@ -1,31 +1,39 @@
-import init, { initialize, create_header, State, get_element_by_id } from './pkg/rusty_dom.js';
+import init, { initialize, get_element_by_id, RustyElement } from './pkg/rusty_dom.js';
 
 async function run() {
+    console.log("Initializing WASM...");
     await init();
-    initialize();
+    await initialize();
+    console.log("WASM Initialized");
 
     const initialState = {
         message: "Hello, World!",
         count: 0
     };
 
-    const state = new State(JSON.stringify(initialState));
+    const state = new State(initialState.message);
+    console.log("Initial state:", state.get());
 
-    let app = get_element_by_id("app");
+    const app = await get_element_by_id("app");
 
-    let header = create_header(state);
-
+    const header = new RustyElement("h1");
+    header.set_attribute("class", "header");
+    header.set_text(state.get());
     app.append_child(header);
 
-    const updatedState = {
-        message: "Hello, RustyDOM!",
-        count: 1
+    const button = new RustyElement("button");
+    button.set_text("Click me");
+    button.set_attribute("class", "button");
+    button.set_style("margin-top", "10px");
+
+    const onClick = () => {
+        state.set("Button clicked!");
+        header.set_text(state.get());
     };
 
-    state.set(JSON.stringify(updatedState));
-    const parsedUpdatedState = JSON.parse(state.get());
-
-    header.set_text(parsedUpdatedState.message);
+    const onClickClosure = Closure::wrap(Box::new(onClick) as Box<dyn FnMut()>);
+    button.add_event_listener("click", onClickClosure);
+    app.append_child(button);
 }
 
 run().catch(console.error);
