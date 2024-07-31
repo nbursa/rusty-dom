@@ -1,17 +1,17 @@
-extern crate wasm_bindgen;
 extern crate console_error_panic_hook;
-extern crate log;
 extern crate console_log;
+extern crate log;
+extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
 
 pub mod element;
-pub mod state;
 pub mod router;
+pub mod state;
 
-pub use state::State;
 pub use element::RustyElement;
 pub use router::Router;
+pub use state::State;
 
 #[wasm_bindgen]
 pub fn initialize() -> Result<(), JsValue> {
@@ -21,17 +21,3 @@ pub fn initialize() -> Result<(), JsValue> {
 
     Ok(())
 }
-
-#[wasm_bindgen]
-pub fn create_header(state: &State) -> Result<RustyElement, JsValue> {
-    let header = RustyElement::new("h1")?;
-    header.set_attribute("class", "header")?;
-    header.set_text(&state.get())?;
-    Ok(header)
-}
-
-#[wasm_bindgen]
-pub fn get_element_by_id(id: &str) -> Result<RustyElement, JsValue> {
-    RustyElement::from_id(id)
-}
-
