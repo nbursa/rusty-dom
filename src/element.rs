@@ -22,7 +22,6 @@ impl RustyElement {
         })
     }
 
-    #[wasm_bindgen]
     pub fn from_id(id: &str) -> Result<RustyElement, JsValue> {
         let document = window().unwrap().document().unwrap();
         let element = document
@@ -34,18 +33,15 @@ impl RustyElement {
         })
     }
 
-    #[wasm_bindgen]
     pub fn set_attribute(&self, name: &str, value: &str) -> Result<(), JsValue> {
         self.inner.borrow().set_attribute(name, value)
     }
 
-    #[wasm_bindgen]
     pub fn set_text(&self, text: &str) -> Result<(), JsValue> {
         self.inner.borrow().set_text_content(Some(text));
         Ok(())
     }
 
-    #[wasm_bindgen]
     pub fn add_event_listener(
         &self,
         event: &str,
@@ -60,7 +56,6 @@ impl RustyElement {
         Ok(())
     }
 
-    #[wasm_bindgen]
     pub fn set_style(&self, property: &str, value: &str) -> Result<(), JsValue> {
         let element = self.inner.borrow();
         let html_element: &web_sys::HtmlElement = element
@@ -70,13 +65,11 @@ impl RustyElement {
         Ok(())
     }
 
-    #[wasm_bindgen]
     pub fn append_child(&self, child: &RustyElement) -> Result<(), JsValue> {
         self.inner.borrow().append_child(&child.inner.borrow())?;
         Ok(())
     }
 
-    #[wasm_bindgen]
     pub fn click(&self) -> Result<(), JsValue> {
         let binding = self.inner.borrow();
         let html_element: &HtmlElement = binding.dyn_ref().expect("Element is not an HtmlElement");
