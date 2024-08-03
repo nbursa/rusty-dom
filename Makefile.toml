@@ -1,0 +1,16 @@
+[tasks.build]
+command = "cargo"
+args = ["build", "--target", "wasm32-unknown-unknown"]
+
+[tasks.bindgen]
+command = "wasm-bindgen"
+args = ["--out-dir", "./static", "--target", "web", "./target/wasm32-unknown-unknown/debug/rusty_dom.wasm"]
+
+[tasks.run]
+command = "cargo"
+args = ["run"]
+
+[tasks.watch]
+dependencies = ["build"]
+command = "cargo"
+args = ["watch", "-x", "build", "-s", "wasm-bindgen --out-dir ./static --target web ./target/wasm32-unknown-unknown/debug/rusty_dom.wasm"]

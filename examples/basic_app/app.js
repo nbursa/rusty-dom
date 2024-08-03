@@ -30,7 +30,7 @@ async function run() {
     header.set_text("Button clicked!");
   };
 
-  button.addEventListener("click", onClick);
+  button.add_event_listener("click", onClick);
   app.append_child(button);
 }
 
